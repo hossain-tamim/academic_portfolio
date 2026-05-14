@@ -1,4 +1,7 @@
-import Link from 'next/link';
+const fs = require('fs');
+const path = require('path');
+
+const content = `import Link from 'next/link';
 import Image from 'next/image';
 import Navigation from '@/components/public/Navigation';
 import Footer from '@/components/public/Footer';
@@ -19,11 +22,6 @@ async function getPhotoCount() {
   catch { return 0; }
 }
 
-async function getDailyQuote() {
-  const idx = Math.floor(Date.now() / 86400000) % QUOTES.length;
-  return QUOTES[idx];
-}
-
 const RESEARCH_AREAS = [
   { label: 'Machine Learning',  icon: '◈', desc: 'Neural networks, model optimization, and learning theory',      grad: 'from-indigo-500 to-violet-600' },
   { label: 'Computer Vision',   icon: '◉', desc: 'Image recognition, object detection, and visual understanding',  grad: 'from-teal-400 to-cyan-600' },
@@ -31,40 +29,6 @@ const RESEARCH_AREAS = [
   { label: 'NLP',               icon: '◐', desc: 'Language models, text understanding, semantic analysis',          grad: 'from-emerald-400 to-teal-600' },
   { label: 'Egocentric Vision', icon: '▦', desc: 'First-person activity recognition and wearable AI',              grad: 'from-amber-400 to-orange-600' },
   { label: 'Human-Centered AI', icon: '◭', desc: 'AI systems designed for human interaction and trust',            grad: 'from-rose-400 to-pink-600' },
-];
-
-const QUOTES = [
-  { text: 'The only way to do great work is to love what you do.', author: 'Steve Jobs' },
-  { text: 'In the middle of every difficulty lies opportunity.', author: 'Albert Einstein' },
-  { text: 'It does not matter how slowly you go as long as you do not stop.', author: 'Confucius' },
-  { text: 'Imagination is more important than knowledge.', author: 'Albert Einstein' },
-  { text: 'The future belongs to those who believe in the beauty of their dreams.', author: 'Eleanor Roosevelt' },
-  { text: 'Whether you think you can or you think you can\'t, you\'re right.', author: 'Henry Ford' },
-  { text: 'The best time to plant a tree was 20 years ago. The second best time is now.', author: 'Chinese Proverb' },
-  { text: 'An unexamined life is not worth living.', author: 'Socrates' },
-  { text: 'Do not go where the path may lead; go instead where there is no path and leave a trail.', author: 'Ralph Waldo Emerson' },
-  { text: 'The greatest glory in living lies not in never falling, but in rising every time we fall.', author: 'Nelson Mandela' },
-  { text: 'In the end, it\'s not the years in your life that count. It\'s the life in your years.', author: 'Abraham Lincoln' },
-  { text: 'Life is either a daring adventure or nothing at all.', author: 'Helen Keller' },
-  { text: 'Many of life\'s failures are people who did not realize how close they were to success when they gave up.', author: 'Thomas Edison' },
-  { text: 'The only impossible journey is the one you never begin.', author: 'Tony Robbins' },
-  { text: 'Do what you can, with what you have, where you are.', author: 'Theodore Roosevelt' },
-  { text: 'If you want to live a happy life, tie it to a goal, not to people or things.', author: 'Albert Einstein' },
-  { text: 'Your time is limited, so don\'t waste it living someone else\'s life.', author: 'Steve Jobs' },
-  { text: 'You will face many defeats in life, but never let yourself be defeated.', author: 'Maya Angelou' },
-  { text: 'Spread love everywhere you go. Let no one ever come to you without leaving happier.', author: 'Mother Teresa' },
-  { text: 'When you reach the end of your rope, tie a knot in it and hang on.', author: 'Franklin D. Roosevelt' },
-  { text: 'Always remember that you are absolutely unique. Just like everyone else.', author: 'Margaret Mead' },
-  { text: 'You miss 100% of the shots you don\'t take.', author: 'Wayne Gretzky' },
-  { text: 'Life is not measured by the number of breaths we take, but by the moments that take our breath away.', author: 'Maya Angelou' },
-  { text: 'If you look at what you have in life, you\'ll always have more.', author: 'Oprah Winfrey' },
-  { text: 'Never let the fear of striking out keep you from playing the game.', author: 'Babe Ruth' },
-  { text: 'The secret of getting ahead is getting started.', author: 'Mark Twain' },
-  { text: 'It always seems impossible until it\'s done.', author: 'Nelson Mandela' },
-  { text: 'Act as if what you do makes a difference. It does.', author: 'William James' },
-  { text: 'Success is not final, failure is not fatal: it is the courage to continue that counts.', author: 'Winston Churchill' },
-  { text: 'Believe you can and you\'re halfway there.', author: 'Theodore Roosevelt' },
-  { text: 'The mind is everything. What you think you become.', author: 'Buddha' },
 ];
 
 const SKILLS = [
@@ -82,9 +46,15 @@ const SKILLS = [
   { label: 'PostgreSQL',   color: 'border-cyan-500/30 text-cyan-300' },
 ];
 
+const gradStyle = (from: string, to: string) => ({
+  background: \`linear-gradient(90deg, \${from}, \${to})\`,
+  WebkitBackgroundClip: 'text' as const,
+  WebkitTextFillColor: 'transparent' as const,
+  backgroundClip: 'text' as const,
+});
 
 export default async function HomePage() {
-  const [news, photoCount, dailyQuote] = await Promise.all([getLatestNews(), getPhotoCount(), getDailyQuote()]);
+  const [news, photoCount] = await Promise.all([getLatestNews(), getPhotoCount()]);
 
   return (
     <>
@@ -120,7 +90,7 @@ export default async function HomePage() {
                   <p className="text-white/25 text-xs font-medium tracking-[0.35em] uppercase mb-3">Lecturer · Computer Science</p>
                   <h1 className="font-black leading-[0.85] tracking-tighter mb-4">
                     <span className="block text-5xl sm:text-6xl md:text-7xl text-white/90">MD Tamim</span>
-                    <span className="block text-5xl sm:text-6xl md:text-7xl lg:text-8xl bg-gradient-to-r from-[#818cf8] to-[#34d399] bg-clip-text text-transparent">Hossain</span>
+                    <span className="block text-5xl sm:text-6xl md:text-7xl lg:text-8xl" style={gradStyle('#818cf8', '#34d399')}>Hossain</span>
                   </h1>
                   <div className="flex items-center gap-3">
                     <div className="h-px w-10 bg-gradient-to-r from-indigo-500 to-transparent" />
@@ -183,8 +153,8 @@ export default async function HomePage() {
                 </div>
               </div>
 
-              {/* Right: Profile Photo + Quote */}
-              <div className="order-1 lg:order-2 flex flex-col items-center lg:items-end gap-6">
+              {/* Right: Profile Photo */}
+              <div className="order-1 lg:order-2 flex justify-center lg:justify-end">
                 <div className="relative">
                   <div className="absolute -inset-6 rounded-[2.5rem] opacity-40 blur-3xl animate-float"
                     style={{ background: 'linear-gradient(135deg,rgba(99,102,241,0.5),rgba(52,211,153,0.25))' }} />
@@ -217,13 +187,6 @@ export default async function HomePage() {
                     </div>
                   </div>
                 </div>
-
-                {/* Daily Quote */}
-                <div className="w-80 sm:w-96 lg:w-[380px] px-1">
-                  <p className="text-white/45 text-base italic leading-relaxed mb-3">&ldquo;{dailyQuote.text}&rdquo;</p>
-                  <span className="text-white/30 text-sm tracking-wider">— {dailyQuote.author}</span>
-                </div>
-
               </div>
             </div>
           </div>
@@ -239,7 +202,7 @@ export default async function HomePage() {
         {/* ══════════════════════════
             STATS STRIP
         ══════════════════════════ */}
-        <section className="relative border-y border-white/6 bg-white/[0.015]">
+        <section className="relative border-y border-white/[0.06]" style={{ background: 'rgba(255,255,255,0.015)' }}>
           <div className="max-w-5xl mx-auto px-6 py-8">
             <div className="grid grid-cols-2 md:grid-cols-4 gap-0">
               {[
@@ -248,8 +211,8 @@ export default async function HomePage() {
                 { num: '100%', label: 'Dedication',       color: 'text-amber-400' },
                 { num: photoCount > 0 ? String(photoCount) : '∞', label: 'Photos Taken', color: 'text-rose-400' },
               ].map(({ num, label, color }, i) => (
-                <div key={label} className={`text-center py-4 ${i > 0 ? 'border-l border-white/[0.06]' : ''}`}>
-                  <div className={`text-3xl font-black tabular-nums ${color}`}>{num}</div>
+                <div key={label} className={\`text-center py-4 \${i > 0 ? 'border-l border-white/[0.06]' : ''}\`}>
+                  <div className={\`text-3xl font-black tabular-nums \${color}\`}>{num}</div>
                   <div className="text-[10px] text-white/25 uppercase tracking-[0.15em] mt-1.5">{label}</div>
                 </div>
               ))}
@@ -271,7 +234,7 @@ export default async function HomePage() {
               <div className="flex items-end justify-between gap-4 flex-wrap">
                 <h2 className="text-4xl sm:text-5xl font-black tracking-tighter">
                   <span className="text-white">Research </span>
-                  <span className="bg-gradient-to-r from-[#818cf8] to-[#34d399] bg-clip-text text-transparent">Interests</span>
+                  <span style={gradStyle('#818cf8', '#34d399')}>Interests</span>
                 </h2>
                 <Link href="/research" className="flex items-center gap-2 text-sm text-white/30 hover:text-white/70 transition-colors">
                   All Projects
@@ -283,11 +246,11 @@ export default async function HomePage() {
               {RESEARCH_AREAS.map((area) => (
                 <Link key={area.label} href="/research"
                   className="group relative overflow-hidden rounded-2xl border border-white/[0.07] bg-white/[0.02] hover:bg-white/[0.05] p-6 transition-all duration-300 hover:border-white/[0.13] hover:-translate-y-1">
-                  <div className={`absolute top-0 left-6 right-6 h-[1.5px] bg-gradient-to-r ${area.grad} opacity-50 group-hover:opacity-100 group-hover:left-0 group-hover:right-0 transition-all duration-500`} />
+                  <div className={\`absolute top-0 left-6 right-6 h-[1.5px] bg-gradient-to-r \${area.grad} opacity-50 group-hover:opacity-100 group-hover:left-0 group-hover:right-0 transition-all duration-500\`} />
                   <div className="text-2xl font-mono text-white/25 group-hover:text-white/60 transition-colors mb-5">{area.icon}</div>
                   <h3 className="font-bold text-white/70 group-hover:text-white transition-colors text-sm mb-2">{area.label}</h3>
                   <p className="text-xs text-white/30 leading-relaxed">{area.desc}</p>
-                  <div className={`mt-5 h-0.5 rounded-full bg-gradient-to-r ${area.grad} w-6 group-hover:w-14 transition-all duration-500`} />
+                  <div className={\`mt-5 h-0.5 rounded-full bg-gradient-to-r \${area.grad} w-6 group-hover:w-14 transition-all duration-500\`} />
                 </Link>
               ))}
             </div>
@@ -307,7 +270,7 @@ export default async function HomePage() {
             <div className="flex flex-wrap gap-2">
               {SKILLS.map((s) => (
                 <span key={s.label}
-                  className={`px-3 py-1.5 text-xs font-medium rounded-lg border bg-white/[0.02] hover:bg-white/[0.07] cursor-default transition-all hover:-translate-y-0.5 ${s.color}`}>
+                  className={\`px-3 py-1.5 text-xs font-medium rounded-lg border bg-white/[0.02] hover:bg-white/[0.07] cursor-default transition-all hover:-translate-y-0.5 \${s.color}\`}>
                   {s.label}
                 </span>
               ))}
@@ -328,7 +291,7 @@ export default async function HomePage() {
               </div>
               <h2 className="text-4xl sm:text-5xl font-black tracking-tighter">
                 <span className="text-white">News &amp; </span>
-                <span className="bg-gradient-to-r from-[#34d399] to-[#22d3ee] bg-clip-text text-transparent">Updates</span>
+                <span style={gradStyle('#34d399', '#22d3ee')}>Updates</span>
               </h2>
             </div>
             {news.length > 0 ? (
@@ -337,25 +300,27 @@ export default async function HomePage() {
                   <div key={item.id}
                     className="group flex gap-5 p-5 rounded-2xl border border-white/[0.07] bg-white/[0.02] hover:bg-white/[0.04] hover:border-white/[0.11] transition-all">
                     <div className="shrink-0 flex flex-col items-center gap-2 pt-1.5">
-                      <span className={`w-2.5 h-2.5 rounded-full ${i === 0 ? 'bg-teal-400 animate-pulse' : 'bg-white/15'}`} />
+                      <span className={\`w-2.5 h-2.5 rounded-full \${i === 0 ? 'bg-teal-400 animate-pulse' : 'bg-white/15'}\`} />
                       {i < news.length - 1 && <div className="w-px flex-1 bg-white/[0.05] min-h-[24px]" />}
                     </div>
-                    <div className="flex-1 min-w-0 flex items-center gap-4">
-                      <span className="shrink-0 text-[10px] text-white/30 uppercase tracking-wider w-20">{item.date}</span>
-                      {item.url ? (
-                        <a href={item.url} target="_blank" rel="noopener noreferrer"
-                          className="text-sm text-white/70 group-hover:text-white transition-colors hover:underline underline-offset-2 flex-1">
-                          {item.title} <span className="text-white/30 text-xs">↗</span>
-                        </a>
-                      ) : (
-                        <span className="text-sm text-white/70 group-hover:text-white transition-colors flex-1">{item.title}</span>
-                      )}
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-start justify-between gap-3 mb-1.5 flex-wrap">
+                        <h3 className="font-semibold text-white/75 group-hover:text-white transition-colors text-sm">{item.title}</h3>
+                        {item.featured && (
+                          <span className="shrink-0 px-2 py-0.5 bg-amber-500/10 text-amber-400 border border-amber-500/20 rounded-full text-[10px] font-medium">Featured</span>
+                        )}
+                      </div>
+                      <p className="text-xs text-white/35 leading-relaxed line-clamp-2">{item.content}</p>
+                      <p className="text-[10px] text-white/20 mt-2 uppercase tracking-wider">
+                        {new Date(item.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                      </p>
                     </div>
                   </div>
                 ))}
               </div>
             ) : (
-              <div className="flex items-center gap-5 p-6 rounded-2xl border border-white/[0.07] max-w-xl bg-white/2">
+              <div className="flex items-center gap-5 p-6 rounded-2xl border border-white/[0.07] max-w-xl"
+                style={{ background: 'rgba(255,255,255,0.02)' }}>
                 <span className="text-3xl">📢</span>
                 <p className="text-white/25 text-sm">No updates yet — check back soon.</p>
               </div>
@@ -377,7 +342,7 @@ export default async function HomePage() {
                 </div>
                 <h2 className="text-4xl sm:text-5xl font-black tracking-tighter mb-7">
                   <span className="text-white">About </span>
-                  <span className="bg-gradient-to-r from-[#a78bfa] to-[#f472b6] bg-clip-text text-transparent">Me</span>
+                  <span style={gradStyle('#a78bfa', '#f472b6')}>Me</span>
                 </h2>
                 <p className="text-white/45 leading-relaxed text-sm mb-7">
                   I am a Lecturer at the Department of Computer Science and Engineering, Premier University, Chittagong.
@@ -393,7 +358,7 @@ export default async function HomePage() {
                   ].map(({ k, v, c }) => (
                     <div key={k} className="flex gap-5 py-3 border-b border-white/[0.05]">
                       <span className="text-white/20 text-[10px] uppercase tracking-wider w-20 shrink-0 pt-0.5">{k}</span>
-                      <span className={`text-xs font-medium ${c}`}>{v}</span>
+                      <span className={\`text-xs font-medium \${c}\`}>{v}</span>
                     </div>
                   ))}
                 </div>
@@ -418,7 +383,7 @@ export default async function HomePage() {
                 ].map((item) => (
                   <Link key={item.href} href={item.href}
                     className="group relative overflow-hidden rounded-2xl border border-white/[0.07] bg-white/[0.02] hover:bg-white/[0.06] p-5 transition-all duration-300 hover:border-white/[0.14] hover:-translate-y-1">
-                    <div className={`absolute top-0 left-0 right-0 h-[1.5px] bg-gradient-to-r ${item.grad} opacity-40 group-hover:opacity-90 transition-opacity`} />
+                    <div className={\`absolute top-0 left-0 right-0 h-[1.5px] bg-gradient-to-r \${item.grad} opacity-40 group-hover:opacity-90 transition-opacity\`} />
                     <span className="text-2xl mb-4 block font-mono text-white/25 group-hover:text-white/60 transition-colors">{item.icon}</span>
                     <p className="font-bold text-white/65 group-hover:text-white text-sm transition-colors">{item.label}</p>
                     <p className="text-[11px] text-white/25 mt-1">{item.sub}</p>
@@ -434,3 +399,7 @@ export default async function HomePage() {
     </>
   );
 }
+`;
+
+fs.writeFileSync(path.join(__dirname, '..', 'src/app/page.tsx'), content);
+console.log('Home page written!');

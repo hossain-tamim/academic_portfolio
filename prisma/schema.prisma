@@ -1,0 +1,136 @@
+// This is your Prisma schema file
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// Admin user
+model User {
+  id            String    @id @default(cuid())
+  name          String?
+  email         String    @unique
+  password      String
+  role          String    @default("ADMIN")
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+}
+
+// Teaching - simple flat list
+model Teaching {
+  id          String  @id @default(cuid())
+  code        String
+  name        String
+  semester    String  // e.g. "Fall 2025"
+  creditHours Float?
+  description String? @db.Text
+  syllabus    String?
+  featured    Boolean @default(false)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// Blog posts
+model BlogPost {
+  id            String    @id @default(cuid())
+  title         String
+  slug          String    @unique
+  content       String    @db.Text
+  excerpt       String?
+  published     Boolean   @default(false)
+  
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+}
+
+// Publications
+model Publication {
+  id            String    @id @default(cuid())
+  title         String
+  authors       String    // Full author list
+  year          Int
+  venue         String    // Journal/Conference name
+  publisher     String?   // Publisher name
+  doi           String?
+  pdfUrl        String?
+  abstract      String?   @db.Text
+  type          String    // "PREPRINT", "JOURNAL", "CONFERENCE", "REVIEW"
+  badge         String?   // For journals: "Q1", "Q2", "Q3", "Q4", null for others
+  volume        String?   // Journal volume
+  issue         String?   // Journal issue
+  pages         String?   // Page range
+  featured      Boolean   @default(false)
+  
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  
+  @@index([year])
+  @@index([type])
+  @@index([featured])
+}
+
+
+
+// Research projects
+model Project {
+  id            String    @id @default(cuid())
+  title         String
+  description   String    @db.Text
+  status        String    @default("ONGOING") // "ONGOING", "COMPLETED"
+  featured      Boolean   @default(false)
+  imageUrl      String?   @db.Text
+  startDate     DateTime?
+  endDate       DateTime?
+  githubUrl     String?
+  datasetUrl    String?
+  paperUrl      String?
+  tags          String?   // Comma-separated tags
+
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+}
+
+// Contact messages
+model ContactMessage {
+  id            String    @id @default(cuid())
+  name          String
+  email         String
+  subject       String
+  message       String    @db.Text
+  read          Boolean   @default(false)
+
+  createdAt     DateTime  @default(now())
+}
+
+// Photography
+model Photo {
+  id        String   @id @default(cuid())
+  url       String   // Cloudinary secure URL
+  publicId  String   // Cloudinary public ID (for deletion)
+  title     String?
+  tag       String   @default("other") // mountains, nature, people, landscape, street, other
+  featured  Boolean  @default(false)   // show in hero carousel
+  width     Int?
+  height    Int?
+  createdAt DateTime @default(now())
+
+  @@index([tag])
+}
+
+// News/Announcements
+model News {
+  id        String   @id @default(cuid())
+  title     String
+  url       String?          // optional hyperlink
+  date      String           // e.g. "May 2026"
+  published Boolean  @default(true)
+  featured  Boolean  @default(false)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
